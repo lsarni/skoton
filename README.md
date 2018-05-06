@@ -20,9 +20,8 @@ Since this is a beta version there are some limitations:
 
 ## How to use
 After downloading and building the project just run it. 
-It will ask for 3 strings (press enter after each one):
+It will ask for (press enter after each one):
 * Full file path of the ontology (.owl)
-* IRI of the ontology (this is the value of the `rdf:about` of the `owl:Ontology`)
 * Full file path of the taxonomy (.xml)
 After that it will start processing the taxonomy and finally save the ontology.
 
@@ -34,8 +33,6 @@ Just run the project and input the strings as required:
 ```
 Enter the full path of the ontology file (.owl):
 C:\Users\lulas\Documents\skoton\example\acm-css.owl
-Enter the IOR of the ontology file:
-http://www.semanticweb.org/lsarni/ontologies/acm-ccs
 Enter the full path of the SKOS taxonomy:
 C:\Users\lulas\Documents\skoton\example\acm-css-lite.xml
 SKOSConceptScheme: Start processing...

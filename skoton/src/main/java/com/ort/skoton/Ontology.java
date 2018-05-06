@@ -1,24 +1,25 @@
 package com.ort.skoton;
 
 import java.io.File;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.change.MakePrimitiveSubClassesMutuallyDisjoint;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAnnotation;
 import org.semanticweb.owlapi.model.OWLAnnotationProperty;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLDifferentIndividualsAxiom;
+import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
+import org.semanticweb.owlapi.model.OWLObjectPropertyAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.OWLOntologyStorageException;
+import org.semanticweb.owlapi.model.parameters.Imports;
 
 public class Ontology {
 
@@ -27,7 +28,7 @@ public class Ontology {
   private final OWLOntology ontology;
   private final OWLDataFactory dataFactory;
 
-  public Ontology(String filePath, String ior) throws OWLOntologyCreationException {
+  public Ontology(String filePath) throws OWLOntologyCreationException {
     manager = OWLManager.createOWLOntologyManager();
 
     // Open the existing ontology
@@ -35,7 +36,7 @@ public class Ontology {
     ontology = manager.loadOntologyFromOntologyDocument(file);
     dataFactory = ontology.getOWLOntologyManager().getOWLDataFactory();
 
-    IOR = IRI.create(ior);
+    IOR = ontology.getOntologyID().getOntologyIRI().get();
   }
 
   public void createFromSKOS(SKOS skos) {
@@ -43,75 +44,61 @@ public class Ontology {
       SKOSConceptScheme scheme = skos.getConceptScheme();
       List<String> topConcepts = scheme.getTopConcepts();
 
-      OWLObjectProperty property = createObjectProperty("#relatedClass");
-      Set<OWLAxiom> relatedClassAxioms = new HashSet<>();
-      relatedClassAxioms.add(dataFactory.getOWLSymmetricObjectPropertyAxiom(property));
-      manager.addAxioms(ontology, relatedClassAxioms.stream());
-
       createAnnotationProperty("#altLabel");
 
       System.out.println("Ontology: Start processing concepts...");
       processByLevel(skos, null, topConcepts);
 
       System.out.println("Ontology: Saving ontology...");
+
+      OWLDifferentIndividualsAxiom axiom = dataFactory.getOWLDifferentIndividualsAxiom(ontology.getIndividualsInSignature(Imports.EXCLUDED));
+      manager.addAxiom(ontology, axiom);
+
       manager.saveOntology(ontology);
     } catch (OWLOntologyStorageException ex) {
       Logger.getLogger(Ontology.class.getName()).log(Level.SEVERE, null, ex);
     }
   }
 
-  private void processByLevel(SKOS skos, OWLClass broader, List<String> topConcepts) {
+  private void processByLevel(SKOS skos, OWLIndividual broader, List<String> topConcepts) {
     for (int i = 0; i < topConcepts.size(); i++) {
       String id = topConcepts.get(i);
       System.out.println("Ontology: Processing " + id);
       SKOSConcept concept = skos.getConcept(id);
       if (concept != null) {
-        OWLClass owlClass;
-        if (broader == null) {
-          owlClass = createClass(concept.getId());
-        } else {
-          owlClass = createSubClass(broader, concept.getId());
+        OWLClass topic = getClass("#Topic");
+        OWLIndividual individual = createIndividual(topic, IOR + concept.getId());
+        if (broader != null) {
+          addObjectPropertyToIndividual("#subtopicOf", individual, broader);
         }
+
         List<String> relatedConcepts = concept.getRelatedConcepts();
-        // TODO: create related concepts
+        for (int n = 0; n < relatedConcepts.size(); n++) {
+          if (ontology.containsIndividualInSignature(IRI.create(IOR + relatedConcepts.get(n)))) {
+            addObjectPropertyToIndividual("#relatedTo", individual, dataFactory.getOWLNamedIndividual(IOR + relatedConcepts.get(n)));
+          }
+        }
 
-        addAnnotationsToClass(owlClass, dataFactory.getRDFSLabel(), concept.getPrefLabels());
-        addAnnotationsToClass(owlClass, dataFactory.getOWLAnnotationProperty(IOR + "#altLabel"), concept.getAltLabels());
+        addAnnotationsToIndividual(individual, dataFactory.getRDFSLabel(), concept.getPrefLabels());
+        addAnnotationsToIndividual(individual, dataFactory.getOWLAnnotationProperty(IOR + "#altLabel"), concept.getAltLabels());
 
-        processByLevel(skos, owlClass, concept.getNarrowerConcepts());
+        processByLevel(skos, individual, concept.getNarrowerConcepts());
 
       } else {
         System.out.println("ERROR: Couldn't find concept " + id);
       }
     }
   }
-  
-  private OWLClass getClass(String name){
+
+  private OWLClass getClass(String name) {
     return dataFactory.getOWLClass(IOR + name);
   }
 
-  private OWLClass createClass(String name) {
-    OWLClass owlClass = dataFactory.getOWLClass(IOR + name);
-    OWLAxiom declare = dataFactory.getOWLDeclarationAxiom(owlClass);
-    manager.addAxiom(ontology, declare);
-
-    return owlClass;
-  }
-
-  private OWLClass createSubClass(OWLClass owlClass, String subclassName) {
-    OWLClass subclass = dataFactory.getOWLClass(IOR + subclassName);
-    OWLAxiom axiom = dataFactory.getOWLSubClassOfAxiom(subclass, owlClass);
+  private OWLIndividual createIndividual(OWLClass owlClass, String name) {
+    OWLIndividual individual = dataFactory.getOWLNamedIndividual(IOR + name);
+    OWLAxiom axiom = dataFactory.getOWLClassAssertionAxiom(owlClass, individual);
     manager.addAxiom(ontology, axiom);
-
-    return subclass;
-  }
-
-  private OWLObjectProperty createObjectProperty(String name) {
-    OWLObjectProperty objectProperty = dataFactory.getOWLObjectProperty(IOR + name);
-    OWLAxiom declare = dataFactory.getOWLDeclarationAxiom(objectProperty);
-    manager.addAxiom(ontology, declare);
-
-    return objectProperty;
+    return individual;
   }
 
   private OWLAnnotationProperty createAnnotationProperty(String name) {
@@ -122,17 +109,23 @@ public class Ontology {
     return annotationProperty;
   }
 
-  private void addAnnotationsToClass(OWLClass owlClass, OWLAnnotationProperty annotationProperty, List<Label> labels) {
+  private void addAnnotationsToIndividual(OWLIndividual individual, OWLAnnotationProperty annotationProperty, List<Label> labels) {
     for (int n = 0; n < labels.size(); n++) {
       Label label = labels.get(n);
-      addAnnotationToClass(owlClass, annotationProperty, label.getValue(), label.getLanguage());
+      addAnnotationToIndividual(individual, annotationProperty, label.getValue(), label.getLanguage());
     }
   }
 
-  private void addAnnotationToClass(OWLClass owlClass, OWLAnnotationProperty annotationProperty, String value, String language) {
+  private void addAnnotationToIndividual(OWLIndividual individual, OWLAnnotationProperty annotationProperty, String value, String language) {
     OWLAnnotation annotation = dataFactory.getOWLAnnotation(annotationProperty,
             dataFactory.getOWLLiteral(value, language));
-    OWLAxiom axiom = dataFactory.getOWLAnnotationAssertionAxiom(owlClass.getIRI(), annotation);
+    OWLAxiom axiom = dataFactory.getOWLAnnotationAssertionAxiom(individual.asOWLNamedIndividual().getIRI(), annotation);
+    manager.addAxiom(ontology, axiom);
+  }
+
+  private void addObjectPropertyToIndividual(String objectProperty, OWLIndividual to, OWLIndividual from) {
+    OWLObjectProperty property = dataFactory.getOWLObjectProperty(IOR + objectProperty);
+    OWLObjectPropertyAssertionAxiom axiom = dataFactory.getOWLObjectPropertyAssertionAxiom(property, to, from);
     manager.addAxiom(ontology, axiom);
   }
 }
