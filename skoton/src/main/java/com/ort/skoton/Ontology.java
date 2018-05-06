@@ -7,7 +7,6 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.change.MakePrimitiveSubClassesMutuallyDisjoint;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAnnotation;
 import org.semanticweb.owlapi.model.OWLAnnotationProperty;
@@ -27,7 +26,7 @@ public class Ontology {
   private final OWLOntology ontology;
   private final OWLDataFactory dataFactory;
 
-  public Ontology(String filePath, String ior) throws OWLOntologyCreationException {
+  public Ontology(String filePath) throws OWLOntologyCreationException {
     manager = OWLManager.createOWLOntologyManager();
 
     // Open the existing ontology
@@ -35,7 +34,7 @@ public class Ontology {
     ontology = manager.loadOntologyFromOntologyDocument(file);
     dataFactory = ontology.getOWLOntologyManager().getOWLDataFactory();
 
-    IOR = IRI.create(ior);
+    IOR = ontology.getOntologyID().getOntologyIRI().get();
   }
 
   public void createFromSKOS(SKOS skos) {

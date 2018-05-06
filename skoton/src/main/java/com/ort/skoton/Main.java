@@ -15,14 +15,11 @@ public class Main {
       
       System.out.println("Enter the full path of the ontology file (.owl):");
       String ontologyPath = bufferedReader.readLine();
-
-      System.out.println("Enter the IRI of the ontology file:");
-      String ior = bufferedReader.readLine();
-
+      
       System.out.println("Enter the full path of the SKOS taxonomy:");
       String skosFile = bufferedReader.readLine();
 
-      Ontology ontology = new Ontology(ontologyPath, ior);
+      Ontology ontology = new Ontology(ontologyPath);
       SKOS skos = new SKOS(skosFile);
 
       ontology.createFromSKOS(skos);
