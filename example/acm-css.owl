@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.semanticweb.org/lsarni/ontologies/acm-ccs#"
+     xml:base="http://www.semanticweb.org/lsarni/ontologies/acm-ccs"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <owl:Ontology rdf:about="http://www.semanticweb.org/lsarni/ontologies/acm-ccs">
+        <rdfs:label xml:lang="en">Lightweight ontology based on the 2012 version of the ACM Computing Classification System (CCS).
+Created following the pattern for re-engineering a term-based thesaurus, which follows the record-based model described on http://ontologydesignpatterns.org/wiki/Submissions:Pattern_for_re-engineering_a_term-based_thesaurus%2C_which_follows_the_recordbased_data_model%2C_into_an_ontology_schema</rdfs:label>
+        <rdfs:label xml:lang="en">The ACM Computing Classification System (CCS)</rdfs:label>
+    </owl:Ontology>
+</rdf:RDF>
+

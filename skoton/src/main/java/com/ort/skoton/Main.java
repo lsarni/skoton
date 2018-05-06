@@ -16,7 +16,7 @@ public class Main {
       System.out.print("Enter the full path of the ontology file (.owl):");
       String ontologyPath = bufferedReader.readLine();
 
-      System.out.print("Enter the IOR of the ontology file:");
+      System.out.print("Enter the IRI of the ontology file:");
       String ior = bufferedReader.readLine();
 
       System.out.println("Enter the full path of the SKOS taxonomy:");
