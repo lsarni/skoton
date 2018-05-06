@@ -74,17 +74,12 @@ public class Ontology {
         }
         List<String> relatedConcepts = concept.getRelatedConcepts();
         // TODO: create related concepts
-//        for (int n = 0; n < relatedConcepts.size(); n++) {
-//          if (ontology.containsClassInSignature(IRI.create(IOR + relatedConcepts.get(n)))) {
-//
-//          }
-//        }
+
         addAnnotationsToClass(owlClass, dataFactory.getRDFSLabel(), concept.getPrefLabels());
         addAnnotationsToClass(owlClass, dataFactory.getOWLAnnotationProperty(IOR + "#altLabel"), concept.getAltLabels());
 
         processByLevel(skos, owlClass, concept.getNarrowerConcepts());
-        
-        MakePrimitiveSubClassesMutuallyDisjoint primitive = new MakePrimitiveSubClassesMutuallyDisjoint(dataFactory, owlClass, ontology);
+
       } else {
         System.out.println("ERROR: Couldn't find concept " + id);
       }

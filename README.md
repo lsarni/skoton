@@ -32,8 +32,10 @@ In the [example folder](example) I will included the target ontology and a reduc
 
 Just run the project and input the strings as required:
 ```
-Enter the full path of the ontology file (.owl):C:\Users\lulas\Documents\skoton\example\acm-css.owl
-Enter the IOR of the ontology file:http://www.semanticweb.org/lsarni/ontologies/acm-ccs
+Enter the full path of the ontology file (.owl):
+C:\Users\lulas\Documents\skoton\example\acm-css.owl
+Enter the IOR of the ontology file:
+http://www.semanticweb.org/lsarni/ontologies/acm-ccs
 Enter the full path of the SKOS taxonomy:
 C:\Users\lulas\Documents\skoton\example\acm-css-lite.xml
 SKOSConceptScheme: Start processing...

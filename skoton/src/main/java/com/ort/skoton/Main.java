@@ -13,10 +13,10 @@ public class Main {
       InputStreamReader streamReader = new InputStreamReader(System.in);
       BufferedReader bufferedReader = new BufferedReader(streamReader);
       
-      System.out.print("Enter the full path of the ontology file (.owl):");
+      System.out.println("Enter the full path of the ontology file (.owl):");
       String ontologyPath = bufferedReader.readLine();
 
-      System.out.print("Enter the IRI of the ontology file:");
+      System.out.println("Enter the IRI of the ontology file:");
       String ior = bufferedReader.readLine();
 
       System.out.println("Enter the full path of the SKOS taxonomy:");
