@@ -14,10 +14,10 @@ public class Main {
       BufferedReader bufferedReader = new BufferedReader(streamReader);
       
       System.out.println("Enter the full path of the ontology file (.owl):");
-      String ontologyPath = bufferedReader.readLine();
+      String ontologyPath = "C:\\Users\\lulas\\Documents\\Curricula Ontology\\acm-ccs-full.owl";
       
       System.out.println("Enter the full path of the SKOS taxonomy:");
-      String skosFile = bufferedReader.readLine();
+      String skosFile = "C:\\Users\\lulas\\Documents\\Curricula Ontology\\ACMComputingClassificationSystemSKOSTaxonomy.xml";
 
       Ontology ontology = new Ontology(ontologyPath);
       SKOS skos = new SKOS(skosFile);

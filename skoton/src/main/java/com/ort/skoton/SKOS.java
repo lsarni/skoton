@@ -20,6 +20,7 @@ public class SKOS {
   static final String PREF_LABEL = "skos:prefLabel";
   static final String ALT_LABEL = "skos:altLabel";
   static final String CONCEPT = "skos:Concept";
+  static final String BROADER = "skos:broader";
 
   private final String filePath;
   private Document document;

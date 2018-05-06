@@ -11,14 +11,16 @@ public class SKOSConcept {
   private String id;
   private final List<Label> prefLabels;
   private final List<Label> altLabels;
-  private final List<String> narrower;
+  private final List<String> narrower;  
+  private final List<String> broader;
   private final List<String> related;
 
   public SKOSConcept(Node node) {
     this.node = node;
     this.prefLabels = new ArrayList<>();
     this.altLabels = new ArrayList<>();
-    this.narrower = new ArrayList<>();
+    this.narrower = new ArrayList<>();    
+    this.broader = new ArrayList<>();
     this.related = new ArrayList<>();
 
     process();
@@ -34,6 +36,10 @@ public class SKOSConcept {
 
   public List<String> getNarrowerConcepts() {
     return this.narrower;
+  }
+  
+  public List<String> getBroaderConcepts() {
+    return this.broader;
   }
 
   public List<String> getRelatedConcepts() {
@@ -64,6 +70,9 @@ public class SKOSConcept {
           break;
         case SKOS.RELATED:
           related.add(getRDFResource(child));
+          break;
+        case SKOS.BROADER:
+          broader.add(getRDFResource(child));
           break;
         default:
           break;
