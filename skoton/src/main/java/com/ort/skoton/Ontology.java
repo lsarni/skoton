@@ -119,7 +119,7 @@ public class Ontology {
         }
 
         addAnnotationsToIndividual(individual, dataFactory.getRDFSLabel(), concept.getPrefLabels());
-        addAnnotationsToIndividual(individual, dataFactory.getOWLAnnotationProperty(IOR + "#altLabel"), concept.getAltLabels());
+        addAnnotationsToIndividual(individual, dataFactory.getOWLAnnotationProperty(ontologyIOR + "#altLabel"), concept.getAltLabels());
 
         processByLevel(skos, individual, concept.getNarrowerConcepts());
 
@@ -170,7 +170,7 @@ public class Ontology {
 
   private void loadUsedTopics() {
     try {
-      Workbook workbook = WorkbookFactory.create(new File("C:\\Users\\lulas\\Desktop\\Cate\\classificationOut.xlsx"));
+      Workbook workbook = WorkbookFactory.create(new File("C:\\Users\\lulas\\Desktop\\Proyecto\\Datos\\Clasificacion cursos\\Listado de cursos y temas.xlsx"));
       Sheet sheet = workbook.getSheetAt(0);
       for (int i = 0; i < sheet.getLastRowNum(); i++) {
         Row row = sheet.getRow(i);
@@ -214,7 +214,7 @@ public class Ontology {
       OWLIndividual individual = createIndividual(topic, IOR + concept.getId());
 
       addAnnotationsToIndividual(individual, dataFactory.getRDFSLabel(), concept.getPrefLabels());
-      addAnnotationsToIndividual(individual, dataFactory.getOWLAnnotationProperty(IOR + "#altLabel"), concept.getAltLabels());
+      addAnnotationsToIndividual(individual, dataFactory.getOWLAnnotationProperty(ontologyIOR + "#altLabel"), concept.getAltLabels());
 
       List<String> broaderConcepts = concept.getBroaderConcepts();
       for (int n = 0; n < broaderConcepts.size(); n++) {
